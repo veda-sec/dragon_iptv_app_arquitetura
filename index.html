@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dragon IPTV</title>
+<meta name="description" content="Projeto de redes e back-end: proxy no dispositivo, ponte WebRTC entre celular e site e API de contas. Demonstração interativa com dados fictícios.">
+<meta property="og:title" content="Dragon IPTV">
+<meta property="og:description" content="Demonstração interativa do app Dragon IPTV, com dados fictícios.">
+<link rel="icon" href="assets/logo.png">
+<style>
+:root{--bg:#efe6f7;--ink:#241633;--mut:#6b5a80;--card:#fff;--line:#d9c8ea;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0610;--ink:#f4eaff;--mut:#b9a3cf;--card:#1a0f26;--line:#3a2552;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0b0610;--ink:#f4eaff;--mut:#b9a3cf;--card:#1a0f26;--line:#3a2552;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.tag{background:#9b0090;color:#fff;text-align:center;font-size:12px;padding:6px 10px}
+.stage{display:flex;flex-wrap:wrap;gap:24px;justify-content:center;align-items:flex-start;padding:16px}
+.ph{width:min(100%,380px);height:min(780px,calc(100dvh - 60px));min-height:560px;border:10px solid #000;border-radius:46px;background:#07040d;position:relative;overflow:hidden;box-shadow:0 20px 60px #0008,0 0 0 2px #3a2552;color:#f4eaff}
+.sb{position:absolute;top:0;left:0;right:0;height:30px;display:flex;justify-content:space-between;align-items:center;padding:0 22px;font-size:12px;font-weight:600;background:#000;z-index:5}
+.sb:after{content:"";position:absolute;left:50%;top:7px;width:60px;height:14px;margin-left:-30px;background:#111;border-radius:9px}
+.scr{position:absolute;top:30px;left:0;right:0;bottom:0;overflow-y:auto;overflow-x:hidden}
+.scr.nav{bottom:58px}
+.bg{background:radial-gradient(circle at 50% 30%,#2b0e4a,#07040d 70%);min-height:100%;padding:24px 16px;text-align:center}
+.tile{width:84px;height:84px;margin:50px auto 8px;background:#000;border-radius:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px #9b00906a}
+.tile img{width:62px;height:62px}
+.brand{letter-spacing:6px;font-weight:800;font-size:19px}.sub{color:#9a88ad;font-size:12px;letter-spacing:1px}
+.opt{display:flex;align-items:center;gap:12px;text-align:left;padding:14px;border-radius:16px;border:1px solid #4a2a78;background:#150c24;margin:10px 0;cursor:pointer;width:100%;color:inherit;font:inherit}
+.opt.v{border-color:#7a5a10;background:#1a1408}.ic{width:44px;height:44px;border-radius:12px;background:#9333ea;display:flex;align-items:center;justify-content:center;font-size:20px;flex:none}.v .ic{background:#eab308}
+.opt small{display:block;color:#a899bb}.b{font-size:10px;padding:2px 8px;border-radius:99px;background:#3b1a66;color:#d8b4fe;margin-left:6px}.v .b{background:#3a2d08;color:#facc15}
+.two{display:flex;gap:10px}.two .opt{flex-direction:column;text-align:center;font-size:12px;font-weight:700;gap:2px}.two .opt:last-child{border-style:dashed}
+.ov{position:absolute;inset:30px 0 0;background:#000b;display:none;align-items:flex-end;justify-content:center;z-index:6}.ov.on{display:flex}
+.sh{background:#0c0814;border:1px solid #3a1d63;border-radius:24px;margin:12px;padding:16px;width:calc(100% - 24px);max-height:88%;overflow:auto}
+.sh.gold{border-color:#7a5a10}.hd{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+.hd h3{margin:0;font-size:15px;text-transform:uppercase}.x{background:#222;border:0;color:#fff;border-radius:10px;width:32px;height:32px;cursor:pointer}
+.srv{display:flex;justify-content:space-between;padding:12px;border:1px solid #2d1d4a;background:#120b1f;border-radius:14px;margin:8px 0;cursor:pointer}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#34d399;margin-right:8px}.dot.y{background:#facc15}
+.dash{border:2px dashed #5b2d9e;border-radius:14px;padding:14px;text-align:center;color:#d8b4fe;font-weight:700;cursor:pointer;margin-top:10px;font-size:12px}
+.btn{width:100%;border:0;border-radius:12px;padding:13px;font:inherit;font-weight:800;color:#fff;background:#7e22ce;cursor:pointer;margin-top:8px;text-transform:uppercase}.btn:disabled{opacity:.5}.btn.g{background:linear-gradient(90deg,#eab308,#d97706);color:#000}
+.in{width:100%;padding:12px;border-radius:12px;border:1px solid #2d2d3a;background:#15151d;color:#fff;font:inherit;margin:4px 0 8px}
+label{font-size:11px;font-weight:700;color:#9a88ad;letter-spacing:1px}
+.seg{display:flex;gap:8px;margin-bottom:10px}.seg button{flex:1;padding:10px;border-radius:12px;border:0;background:#17141f;color:#aaa;font-weight:700;font-size:11px;cursor:pointer}.seg button.on{background:#9333ea;color:#fff}
+.code{font:800 40px ui-monospace,Menlo,monospace;letter-spacing:6px;text-align:center;background:#05030a;border-radius:14px;padding:14px}
+.mut{color:#9a88ad;font-size:12px}.ok{color:#34d399}
+.ad{padding:30px 16px;text-align:center}.adb{background:#fff;color:#999;height:210px;margin:16px auto;width:80%;display:flex;align-items:center;justify-content:center;font-weight:700}
+.bar{height:6px;background:#1c1428;border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#9333ea,#ec4899);transition:width 3s linear}
+.top{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;font-weight:800;font-size:18px}.top i{color:#a855f7}
+.hero{height:210px;position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:14px}
+.hero h2{margin:4px 0;font-size:26px}.pill{display:inline-block;background:#facc15;color:#000;font-weight:800;border-radius:6px;padding:1px 8px;font-size:12px}
+.hb{display:flex;gap:8px;margin-top:8px}.hb button{border:0;border-radius:10px;padding:9px 14px;font-weight:700;background:#111;color:#fff;cursor:pointer}.hb button+button{background:#fff3}
+.sec{margin:12px;padding:12px;border-radius:16px;background:#0f0a1a}.sec select,.sec input{width:100%;padding:10px;margin-top:8px;border-radius:10px;border:0;background:#1b1530;color:#fff;font:inherit}
+.gt{margin:14px 14px 8px;font-weight:800;text-transform:uppercase;font-size:13px;border-left:4px solid #a855f7;padding-left:8px;display:flex;justify-content:space-between}.gt span{color:#7d6d92;font-weight:500}
+.row{display:flex;gap:10px;overflow-x:auto;padding:0 14px 6px}
+.cd{flex:none;width:112px;cursor:pointer;position:relative}.po{height:160px;border-radius:12px;display:flex;align-items:flex-end;padding:8px;font-weight:800;font-size:14px;line-height:1.1;position:relative}
+.cd small{display:block;font-size:11px;padding:4px 2px;color:#ddd}.st{position:absolute;top:6px;right:6px;background:#0008;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.bd{position:absolute;top:6px;left:6px;background:#6b21a8;font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px}
+.t10 .cd{display:flex;width:auto;align-items:flex-end;gap:0}.t10 b{font-size:70px;line-height:.9;color:transparent;-webkit-text-stroke:2px #5b2d9e}.t10 .cd>div{width:104px}
+.nv{position:absolute;bottom:0;left:0;right:0;height:58px;background:#0a0710;border-top:1px solid #1d1430;display:none;z-index:4}.nv.on{display:flex}
+.nv button{flex:1;background:none;border:0;color:#7d6d92;font-size:10px;font-weight:700;cursor:pointer;text-transform:uppercase}.nv button.on{color:#eab308}.nv span{display:block;font-size:20px}
+.ct{display:flex;gap:6px;margin:12px 14px}.ct button{flex:1;border:0;border-radius:12px;padding:10px 4px;background:#14101f;color:#aaa;font-weight:700;font-size:11px;cursor:pointer}.ct button.on{background:#eab308;color:#000}
+.scrn{aspect-ratio:16/9;border-radius:12px;position:relative;overflow:hidden;background:linear-gradient(90deg,#c0c0c0 0 14%,#c0c000 0 28%,#00c0c0 0 42%,#00c000 0 57%,#c000c0 0 71%,#c00000 0 85%,#0000c0 0)}
+.scrn:after{content:"";position:absolute;left:0;right:0;height:18%;background:#fff4;animation:s 2.4s linear infinite}@keyframes s{from{top:-20%}to{top:100%}}
+.pf{display:flex;gap:12px;align-items:center;margin-bottom:12px}.av{width:54px;height:54px;border-radius:14px;background:linear-gradient(135deg,#eab308,#a855f7);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;color:#000}
+.kv{display:flex;justify-content:space-between;padding:10px 12px;border-radius:10px;background:#0a0710;margin:6px 0;font-size:12px}.kv b{color:#facc15}
+.mi{display:flex;justify-content:space-between;padding:12px 4px;font-weight:700;border-bottom:1px solid #1d1430;cursor:pointer}
+.net{width:min(100%,380px);color:var(--ink)}.net h3{margin:0 0 6px;font-size:14px}
+#net{font:11px/1.6 ui-monospace,Menlo,monospace;height:420px;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px}
+#net b{color:#c026d3}.s2{color:#16a34a}.s4{color:#e5484d}
+
+.ph,.ph *,#net{scrollbar-width:none}.ph::-webkit-scrollbar,.ph *::-webkit-scrollbar,#net::-webkit-scrollbar{display:none}
+.sb{display:none}.ph:before{content:"";position:absolute;top:8px;left:50%;width:70px;height:14px;margin-left:-35px;background:#111;border-radius:9px;z-index:7}
+.ov{align-items:center}.sh{max-width:420px}
+.ph.land{width:min(100%,760px);height:380px;min-height:0;border-radius:38px}
+.ph.land:before{top:50%;left:8px;margin:-35px 0 0;width:14px;height:70px}
+.ph.land .scr,.ph.land .nv,.ph.land .ov{left:28px}.ph.land .scr,.ph.land .ov{top:0}
+.top{justify-content:flex-start;gap:8px}.top img{border-radius:6px}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:6px 14px 10px;gap:8px}.ch h2{margin:0;font-size:13px;text-transform:uppercase;text-align:center}.ch i{width:62px}
+.ch button,.pgn button,.rf button{background:#1b1530;border:0;color:#fff;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer}.rf{text-align:right;padding:0 14px}.rf button{color:#d8b4fe}
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;padding:0 14px}.cg .cd{width:auto}.cg .po{height:140px}
+.cr{grid-column:1/-1;display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;background:#120b1f;cursor:pointer}.cr span{flex:1}
+.pgn{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;padding:16px 14px}.pgn button.on{background:#9333ea}.pgn button:disabled{opacity:.4}.pgn span{align-self:center;color:#7d6d92}
+.w{max-width:1040px;margin:0 auto;padding:0 18px}
+.h0{text-align:center;padding:52px 18px 30px;background:radial-gradient(ellipse at 50% 0,#9b009040,transparent 65%)}
+.h0 img{width:112px;height:112px;filter:drop-shadow(0 0 22px #d63ccb88)}.h0 h1{font-size:clamp(34px,7vw,58px);margin:8px 0;letter-spacing:3px}.h0 h1 i{color:#c026d3;font-style:normal}
+.lead{max-width:700px;margin:0 auto;color:var(--mut);font-size:17px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:22px 0}.chips span{border:1px solid var(--line);border-radius:99px;padding:5px 12px;font-size:12px;font-weight:600;background:var(--card)}
+.cta a{display:inline-block;margin:6px;padding:12px 24px;border-radius:12px;font-weight:700;text-decoration:none;color:#fff;background:linear-gradient(90deg,#9b0090,#d63ccb)}.cta a.g{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.s{padding:34px 0}.s h2{font-size:27px;margin:0 0 6px}.sub2{color:var(--mut);margin:0 0 20px}
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.k{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}.k b{display:block;margin-bottom:4px}.k p{margin:0;color:var(--mut);font-size:14px}
+.n{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#9b0090,#d63ccb);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;margin-bottom:10px}
+figure{margin:0 0 20px}figure img{width:100%;border-radius:14px;border:1px solid var(--line);display:block}figcaption{color:var(--mut);font-size:13px;margin-top:6px}
+.bar2{text-align:center;margin-bottom:14px}.gb{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:10px 18px;font:inherit;font-weight:700;cursor:pointer}
+footer{text-align:center;color:var(--mut);padding:30px 18px;font-size:13px;border-top:1px solid var(--line);margin-top:20px}
+
+.ph{--n:3;--n10:3}.ph.land{--n:4;--n10:5}.sh{position:relative}
+.rw{position:relative}.row{scroll-snap-type:x mandatory;scroll-behavior:smooth}.row .cd{flex:none;width:calc((100% - (var(--n) - 1)*10px)/var(--n));scroll-snap-align:start}
+.po{height:auto;aspect-ratio:2/3}.cg .po{height:auto}.cd small em{display:block;font-style:normal;color:#7d6d92;font-size:9px;text-transform:uppercase}
+.ab{position:absolute;top:34%;width:38px;height:46px;border-radius:14px;border:1px solid #c084fc7a;background:#10081dd9;color:#fff;font-size:22px;cursor:pointer;z-index:3;padding:0}.ab.l{left:6px}.ab.r{right:6px}
+.t1{flex:none;position:relative;width:calc((100% - (var(--n10) - 1)*8px)/var(--n10));display:flex;align-items:flex-end;scroll-snap-align:start}.t1>div{width:62%;margin-left:auto}.t1 .cd{display:block;width:100%}
+.t1 b{position:absolute;left:0;bottom:0;font-size:92px;line-height:.8;font-weight:900;letter-spacing:-6px;color:transparent;-webkit-text-stroke:3px #c4a0ff8c}
+.fl{position:absolute;top:34px;left:12px;z-index:5;display:none;align-items:center;gap:6px;font-weight:800;font-size:19px;cursor:pointer;text-shadow:0 2px 8px #000}.fl i{font-style:normal;color:#c084fc}.fl img{border-radius:8px}
+.ph.land .fl{top:10px;left:38px}
+.fab{position:absolute;right:14px;bottom:72px;width:46px;height:46px;border-radius:50%;background:#9333ea;color:#fff;border:0;font-size:22px;z-index:4;box-shadow:0 6px 20px #0008;display:none;cursor:pointer}
+.hero{height:380px;padding-bottom:26px}.ph.land .hero{height:250px}.hero h2{font-size:30px;margin:6px 0}
+.hb button:first-child{background:#000;box-shadow:0 6px 18px #7e22ce88}.dots{display:flex;gap:6px;justify-content:center;margin-top:12px}.dots i{width:7px;height:7px;border-radius:9px;background:#fff5}.dots i.on{width:26px;background:#a855f7}
+.nv button.on{box-shadow:inset 0 2px 0 #a855f7;color:#c084fc}.nv button[data-k=fav].on{box-shadow:inset 0 2px 0 #eab308;color:#eab308}.nv span{display:flex;justify-content:center}
+.ads{margin:14px;padding:12px;border-radius:16px;background:#0f0a1a;text-align:center}.ads small{display:block;color:#7d6d92;font-weight:700;letter-spacing:2px;font-size:10px;margin-bottom:8px}.ads div{background:#fff;color:#aaa;font-weight:700;height:120px;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:12px}
+.sh.det{padding:0 16px 16px;overflow:hidden}.det .bk{margin:0 -16px;height:92px}.dp{width:84px;aspect-ratio:2/3;border-radius:12px;flex:none;border:2px solid #6b21a8}.det .x{position:absolute;right:10px;top:10px;z-index:2}
+.t1{display:grid;grid-template-columns:38% 62%;grid-template-rows:auto auto;align-items:start}
+.t1>div{grid-column:2;grid-row:1;width:100%;margin:0;position:relative;z-index:1}
+.t1 b{grid-column:1/3;grid-row:1;align-self:end;justify-self:start;position:static;font-size:84px;line-height:.78;letter-spacing:-4px}
+.ph.land .t1 b{font-size:104px}.t1 .bd,.t1 .cd small{display:none}
+.t1 .tt{grid-column:2;grid-row:2;font-size:11px;color:#ddd;padding:4px 2px;height:2.5em;overflow:hidden;line-height:1.2}
+.two2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.tb{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.tb input{flex:1;min-width:160px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;letter-spacing:4px}
+.tb button{border:0;border-radius:12px;padding:12px 20px;font:inherit;font-weight:700;color:#fff;background:linear-gradient(90deg,#9b0090,#d63ccb);cursor:pointer}
+body{display:flex;flex-direction:column;min-height:100dvh;background-image:radial-gradient(ellipse at 50% 0,#9b009040,transparent 55%);background-repeat:no-repeat}
+.m{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:14px 12px}
+.t{display:flex;align-items:center;gap:12px}.t img{width:60px;height:60px;filter:drop-shadow(0 0 18px #d63ccb88)}.t h1{margin:0;font-size:clamp(26px,5vw,36px);letter-spacing:3px}.t h1 i{color:#c026d3;font-style:normal}
+.stage{padding:0;width:100%}.ph{height:min(780px,calc(100dvh - 200px))}.ph.land{height:380px}footer{margin-top:0;padding:14px}
+</style>
+</head>
+<body>
+<main class="m"><header class="t"><img data-l alt="Dragon IPTV"><h1>DRAGON<i>IPTV</i></h1></header>
+<div class="stage"><div class="ph" id="ph"><div class="scr" id="scr"></div><div class="fl" id="fl" data-a="out"><img data-l width="30" height="30" alt=""><span>Dragon<i>IPTV</i></span></div><button class="fab" id="fab" data-a="top">↑</button><nav class="nv" id="nv"></nav><div class="ov" id="ov"></div></div></div>
+<button class="gb" data-a="rot">↻ Girar celular</button></main>
+<footer>Dragon IPTV · demonstração com dados fictícios · nenhum conteúdo real ou API de produção é utilizado</footer>
+<div id="net" hidden></div>
+<script>
+const $=s=>document.querySelector(s),sleep=ms=>new Promise(r=>setTimeout(r,ms)),LOGO="assets/logo.png";
+const A=["Noites","Código","Maré","Reino","Vale","Rota","Cidade","Estrela","Sombras","Ponte","Linha","Ilha"],B=["de Neon","Dragão","Vermelha","de Cinzas","Silencioso","Zero","Submersa","Partida","de Cristal","Norte","do Tempo","das Brumas"],C=["News","Sports","Arena","Kids","Cinema","Music","Docs","Clima"];
+const gen=(n,o=0)=>Array.from({length:n},(_,i)=>`${A[(i+o)%12]} ${B[(i*5+o+(i/12|0))%12]}${i>=12?" "+(1+(i/12|0)):""}`),chan=(n,o=0)=>Array.from({length:n},(_,i)=>`Dragon ${C[(i+o)%8]}${i>=8?" "+(1+(i/8|0)):""}`);
+const M={"CINEMA":gen(34),"FILMES | 4K UHD":gen(40,4)},SE={"SÉRIES | DRAGON PLUS":gen(22,2),"SÉRIES | ANIME":gen(18,7)},CA={"CANAIS | NOTÍCIAS":chan(20),"CANAIS | ESPORTES":chan(18,1),"CANAIS | FILMES":chan(17,4)};
+const DATA={movie:M,series:SE,live:CA},LAB={live:"CANAIS",movie:"FILMES",series:"SÉRIES"},ICO={live:"📺",movie:"🎬",series:"🍿"};
+let lastCode="",mode=null,srv="",tab="movie",favs=new Set([gen(34)[0],gen(22,2)[0],chan(20)[0]]),oc=null,cq="",sy=0,ft="series",hero=0,hi=null,pl=false,hb=null,seg=null,flt="",q="";
+function log(m,p,s,n){const d=document.createElement("div");d.innerHTML=`${new Date().toLocaleTimeString("pt-BR")} <b>${m}</b> ${p} <span class="s${String(s)[0]}">${s}</span> <span style="opacity:.7">${n||""}</span>`;$("#net").prepend(d)}
+const api=async(m,p,s,n,ms=300)=>{await sleep(ms);log(m,p,s,n)};
+const isF=n=>mode==="vip"&&favs.has(n),hue=n=>[...n].reduce((a,c)=>a*31+c.charCodeAt(0),7)%360;
+const sheet=(h,c="")=>{$("#ov").innerHTML=`<div class="sh ${c}">${h}</div>`;$("#ov").classList.add("on")},shut=()=>$("#ov").classList.remove("on");
+const hd=(t,ic,col)=>`<div class="hd"><div class="ic" style="${col||""}">${ic}</div><h3 style="flex:1">${t}</h3><button class="x" data-a="shut">✕</button></div>`;
+
+function welcome(){$("#fl").style.display="none";$("#fab").style.display="none";clearInterval(hi);$("#nv").classList.remove("on");$("#scr").classList.remove("nav");
+$("#scr").innerHTML=`<div class="bg"><div class="tile"><img src="${LOGO}" alt="Dragon IPTV"></div><div class="brand">DRAGON IPTV</div><div class="sub">Filmes · Séries · TV ao vivo</div>
+<h3 style="margin:22px 0 4px">Olá, Bem-Vindo(a) ao <span style="color:#c084fc">Dragon IPTV</span></h3><div class="mut" style="margin-bottom:12px">Escolha uma das opções para acessar seus conteúdos favoritos.</div>
+<button class="opt" data-a="free"><div class="ic">✨</div><div><b>FREE STREAMING</b><span class="b">GRÁTIS</span><small>Acesso completo com anúncios patrocinados.</small></div></button>
+<button class="opt v" data-a="vip"><div class="ic">👑</div><div><b>MEMBRO VIP</b><span class="b">PREMIUM</span><small>Zero anúncios e servidores VIP exclusivos.</small></div></button>
+<div class="two"><button class="opt" data-a="code"><span>📱</span>GERAR CÓDIGO<small>para assistir no site</small></button><button class="opt" data-a="m3u"><span>🔗</span>ADICIONAR M3U<small>sua própria lista</small></button></div></div>`}
+const srvRow=(n,vip,id)=>`<div class="srv" data-a="${vip?"vsrv":"fsrv"}" data-n="${n}"><div><span class="dot ${vip?"y":""}"></span><b>${n}</b><div class="mut" style="margin-top:8px">Canais • Filmes • Séries</div></div><div style="text-align:right"><span class="mut">ONLINE</span><br><b style="color:#c084fc">Acessar →</b></div></div>`;
+const dashBtn=`<div class="dash" data-a="m3u">⬆ ADICIONAR MINHA PRÓPRIA PLAYLIST (LINK OU ARQUIVO)</div>`;
+
+const act={
+shut,
+async sconn(){const v=$("#sc").value.trim(),o=$("#ss"),ok=v===lastCode&&lastCode!=="";
+if(!/^\d{6}$/.test(v)){o.style.color="#e5484d";o.textContent="Digite os 6 dígitos do código.";return}
+await api("GET","/api/bridge?action=offer&code="+v,ok?200:404,ok?"site lê a oferta SDP":"Código inválido ou expirado");
+if(!ok){o.style.color="#e5484d";o.textContent=lastCode?"Código inválido ou expirado.":"Gere um código no celular primeiro (Gerar código).";return}
+await api("POST","/api/bridge",200,"site envia a resposta SDP (answer)");await api("•","/api/bridge",200,"candidatos ICE trocados");log("P2P","DataChannel",200,"aberto: o site agora usa o celular como proxy");
+o.style.color="#16a34a";o.textContent="✅ Site conectado ao celular (P2P).";lastCode=""},
+top(){$("#scr").scrollTo({top:0,behavior:"smooth"})},
+sc(a){const r=a.parentNode.querySelector(".row");r.scrollBy({left:a.dataset.d*r.clientWidth*.85,behavior:"smooth"})},
+det(a){const n=a.dataset.n,t=a.dataset.t,k=hue(n),g=["Ação","Drama","Aventura","Ficção","Suspense","Comédia"];
+sheet(`<button class="x" data-a="shut">✕</button><div class="bk" style="background:linear-gradient(0deg,#0a0614,transparent),linear-gradient(135deg,hsl(${k} 60% 38%),#0a0614)"></div><div style="display:flex;gap:12px;margin-top:-46px;position:relative"><div class="dp" style="background:linear-gradient(160deg,hsl(${k} 60% 38%),hsl(${(k+60)%360} 50% 14%))"></div><div style="padding-top:46px"><h3 style="margin:0 0 6px;font-size:16px;text-transform:none">${n}</h3><span class="pill">★ IMDb ${(6+k%30/10).toFixed(1)}</span> <span class="b">${2018+k%8}</span> <span class="b">${t==="series"?(1+k%4)+" temporada(s)":(90+k%50)+" min"}</span></div></div><div style="margin:10px 0">${[0,1,2].map(i=>`<span class="b" style="margin-right:4px">${g[(k+i)%6]}</span>`).join("")}</div><p class="mut">Sinopse fictícia criada para a demonstração do Dragon IPTV. Nenhum conteúdo real é usado.</p><button class="btn" data-a="play" data-n="${n}" data-t="${t}">▶ ${t==="series"?"Episódios":"Assistir"}</button>`,"det")},
+more(a){sy=$("#scr").scrollTop;oc={g:a.dataset.g,pg:1};cq="";log("—","Ver mais: "+oc.g,200,"abre a categoria completa (paginada)");draw();$("#scr").scrollTop=0},
+back(){oc=null;draw();$("#scr").scrollTop=sy},
+pg(a){oc.pg=+a.dataset.p;draw();$("#scr").scrollTop=0},
+rot(){$("#ph").classList.toggle("land");if($("#nv").classList.contains("on"))draw()},
+async free(){await api("GET","/servidores?tier=free",200,"lista de servidores free");sheet(hd("Servidores Free disponíveis","🗄")+srvRow("SERVIDOR FREE")+dashBtn+'<div class="mut" style="margin-top:12px">1 servidores configurados · Dragon IPTV</div>')},
+vip(){sheet(hd("Área Membro VIP ✨","👑","background:#3a2d08")+`<label>E-MAIL</label><input class="in" id="em" placeholder="seu@email.com"><label>SENHA</label><input class="in" id="pw" type="password" placeholder="••••••••"><div class="mut" id="er" style="color:#f87171"></div><button class="btn g" data-a="login">Entrar como membro VIP</button><div class="dash" data-a="fill" style="font-size:11px">Preencher conta VIP de exemplo</div>`,"gold")},
+fill(){$("#em").value="vip@dragoniptv.example";$("#pw").value="vip1234"},
+async login(){const e=$("#em").value.trim(),p=$("#pw").value;if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)||p.length<4){$("#er").textContent="Preencha e-mail e senha válidos.";return}
+const ok=e==="vip@dragoniptv.example"&&p==="vip1234";await api("POST","/login",ok?200:401,"{email, senha}");if(!ok){$("#er").textContent="Credenciais inválidas (use a conta de exemplo).";return}
+mode="vip";log("—","token Bearer guardado",200,"sessão VIP");startHB();await api("GET","/servidores?tier=vip",200,"servidores VIP");
+sheet(hd("Servidores VIP disponíveis","👑","background:#3a2d08")+["SERVIDOR VIP ( 01 )","SERVIDOR VIP ( 02 )","SERVIDOR VIP ( 03 )","SERVIDOR VIP ( NOVO )"].map(n=>srvRow(n,1)).join("")+dashBtn,"gold")},
+async fsrv(a){mode="free";srv=a.dataset.n;shut();$("#nv").classList.remove("on");
+$("#scr").innerHTML=`<div class="ad"><div style="display:flex;justify-content:space-between" class="mut"><b>PUBLICIDADE</b><span id="cd">Fechando em 3s…</span></div><div class="adb">ANÚNCIO FICTÍCIO</div><b>⏳ Aguarde o anúncio…</b><div class="bar" style="margin-top:10px"><i id="pb"></i></div></div>`;
+log("GET","anúncio (rede de ads)",200,"só no perfil FREE");await sleep(50);$("#pb").style.width="100%";for(let i=3;i>0;i--){$("#cd").textContent=`Fechando em ${i}s…`;await sleep(1000)}enter()},
+async vsrv(a){srv=a.dataset.n;shut();enter()},
+code(){sheet(hd("Modo TV (Proxy)","📱")+`<div class="mut" style="margin-bottom:10px">Insira o código no site da TV/PC para assistir usando o seu celular como ponte. Para assistir aqui pelo app, não precisa de código nenhum.</div><div class="code" id="cc">––– –––</div><div style="margin:12px 0" id="cs"><span class="dot y"></span>Gerando código…</div><button class="btn" id="cb" data-a="code" disabled>Aguarde</button><div class="mut" style="margin-top:10px">Cada código serve uma vez só e vale para um aparelho. Ao gerar outro, o anterior expira.</div>`);bridge()},
+m3u(){sheet(hd("Adicionar lista M3U","⬆")+`<div class="seg"><button class="on" data-a="seg" data-k="l">🔗 Colar link</button><button data-a="seg" data-k="f">📄 Enviar arquivo</button></div><div id="mb"></div>`);act.seg({dataset:{k:"l"}})},
+seg(a){document.querySelectorAll(".seg button").forEach(b=>b.classList.toggle("on",b.dataset.k===a.dataset.k));
+$("#mb").innerHTML=a.dataset.k==="l"?`<label>URL DA PLAYLIST M3U / M3U8</label><input class="in" id="mu" placeholder="https://servidor.exemplo/lista.m3u"><label>NOME (OPCIONAL)</label><input class="in" id="mn" placeholder="Ex: Minha Lista Pessoal"><button class="btn" data-a="loadm">Carregar playlist</button>`:`<div class="dash" data-a="loadm" style="padding:30px">⬆ Clique para escolher o arquivo M3U<br><span class="mut">Demo: carrega uma lista fictícia</span></div><label>NOME</label><input class="in" id="mn" placeholder="Ex: Minha Lista do Arquivo">`},
+async loadm(){const u=$("#mu");if(u&&!/^https?:\/\/.+/.test(u.value)){u.style.borderColor="#f87171";return}
+srv=($("#mn").value||"Minha lista")+" (demo)";mode=mode||"free";shut();await api("POST","/api/stream",200,"proxy recebe a URL (na demo, nada é baixado)");await api("—","parser M3U",200,"classifica ao vivo / filmes / séries");enter()},
+tab(a){tab=a.dataset.k;oc=null;shut();draw()},
+ft(a){ft=a.dataset.k;draw()},
+fav(a){const n=a.dataset.n;if(mode!=="vip"){sheet(hd("Recurso VIP","👑","background:#3a2d08")+'<p class="mut">Salvar favoritos é exclusivo para membros VIP.</p><button class="btn g" data-a="vip">Entrar como membro VIP</button>',"gold");return}favs.has(n)?favs.delete(n):favs.add(n);log("POST","/favoritos",200,(favs.has(n)?"add ":"remove ")+n);draw()},
+conta(){const v=mode==="vip";sheet(`<div class="hd"><div class="pf"><div class="av">${v?"V":"F"}</div><div><b>${v?"Convidado VIP":"Visitante"}</b>${v?' <span class="b" style="background:#eab308;color:#000">VIP</span>':""}<div class="mut">${v?"vip@dragoniptv.example":"Perfil FREE"}</div></div></div><button class="x" data-a="shut">✕</button></div>
+<div class="kv">Status da conta<b class="ok">${v?"✅ Ativa & Paga":"Gratuita"}</b></div><div class="kv">Favoritos salvos<b>${mode==="vip"?favs.size+" itens":"Só VIP"}</b></div><div class="kv">Validade da assinatura<b>${v?"31/12/2030":"—"}</b></div><div class="kv">Servidor carregado<b>${srv}</b></div>
+<div class="mi" data-a="favs"><span>⭐ Ver Meus Favoritos</span><span>${favs.size}</span></div><div class="mi" data-a="vip"><span>🗄 Servidores VIP</span>›</div><div class="mi" data-a="m3u"><span>⬆ Adicionar M3U</span>›</div><div class="mi" data-a="out" style="color:#f87171;border:0">↪ Sair da conta</div>`,"gold")},
+favs(){shut();tab="fav";oc=null;draw()},
+async out(){shut();if(mode==="vip")await api("POST","/logout",200,"token apagado");mode=null;clearInterval(hb);clearInterval(seg);welcome()},
+async play(a){const n=a.dataset.n;pl=true;sheet(hd(n,ICO[a.dataset.t])+`<div class="scrn"></div><div class="mut" style="margin-top:8px">Imagem de teste animada (sem vídeo real). Veja o painel de rede.</div><button class="btn" data-a="stop">Fechar player</button>`);
+await api("POST","/heartbeat",200,"{reproduzindo:true}",120);await api("GET","/api/stream?url=canal.m3u8",200,"manifesto reescrito",200);let i=0;clearInterval(seg);seg=setInterval(()=>log("GET","/api/stream?url=segmento-"+(i++%3)+".ts",200,"6 s (demo)"),2200)},
+stop(){shut();clearInterval(seg);pl=false;log("POST","/heartbeat",200,"{reproduzindo:false}")}
+};
+async function bridge(){const c=String(100000+Math.floor(Math.random()*900000));lastCode=c;await api("POST","/api/bridge",200,"create → "+c);$("#cc").textContent=c;$("#cs").innerHTML='<span class="dot y"></span>Aguardando conexão da TV/PC…';
+for(const t of["POST offer (SDP do celular)","GET answer (site digitou o código)","trocando candidatos ICE"]){await api("•","/api/bridge",200,t,900)}
+log("P2P","DataChannel",200,"aberto: vídeo vai direto, sem servidor");$("#cs").innerHTML='<span class="dot"></span><span class="ok">TV/PC conectada (P2P)</span>';$("#cb").disabled=false;$("#cb").textContent="Gerar novo código"}
+function startHB(){clearInterval(hb);hb=setInterval(()=>{if(mode==="vip"&&!pl)log("POST","/heartbeat",200,"{reproduzindo:false} (real: a cada 2 min)")},9000)}
+async function enter(){await api("GET","/fixtures/lista-demo.m3u",200,"lista M3U fictícia");await api("—","parser M3U",200,"ao vivo / filmes / séries");tab="movie";flt="";q="";oc=null;draw()}
+const card=(n,t,g)=>`<div class="cd"><div class="po" data-a="${t==="live"?"play":"det"}" data-n="${n}" data-t="${t}" style="background:linear-gradient(160deg,hsl(${hue(n)} 60% 38%),hsl(${(hue(n)+60)%360} 50% 14%))"><span class="bd">${t==="live"?"CANAL":t==="movie"?"FILME":"SÉRIE"}</span>${n}</div><span class="st" data-a="fav" data-n="${n}">${isF(n)?"⭐":"☆"}</span><small>${n}<em>${g||""}</em></small></div>`;
+const IC={live:'<rect width="20" height="15" x="2" y="7" rx="2"/><polyline points="17 2 12 7 7 2"/>',movie:'<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18M3 7.5h4M3 12h18M3 16.5h4M17 3v18M17 7.5h4M17 16.5h4"/>',series:'<path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3Z"/><path d="m6.2 5.3 3.1 3.9M12.4 3.4l3.1 4M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/>',fav:'<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',acc:'<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>'};
+const ic=k=>`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IC[k]}</svg>`;
+const ad='<div class="ads"><small>PUBLICIDADE</small><div>ANÚNCIO FICTÍCIO</div></div>';
+const favG=(g,f,t)=>`<div class="gt">${g}<span>${f.length} itens</span></div><div class="cg" style="grid-template-columns:repeat(${t==="live"?1:"var(--n)"},1fr);margin-bottom:6px">${f.map(x=>t==="live"?`<div class="cr" data-a="play" data-n="${x}" data-t="live">📺 <span>${x}</span><b data-a="fav" data-n="${x}">${isF(x)?"⭐":"☆"}</b></div>`:card(x,t,g)).join("")}</div>`;
+function draw(){const s=$("#scr"),T=tab,land=$("#ph").classList.contains("land");s.classList.add("nav");$("#fl").style.display="flex";
+$("#nv").classList.add("on");$("#nv").innerHTML=[["live","Canais"],["movie","Filmes"],["series","Séries"],["fav","Curtidos"+(mode==="vip"?" ("+favs.size+")":"")],["acc","Conta"]].map(([k,l])=>`<button class="${k===T?"on":""}" data-a="${k==="acc"?"conta":"tab"}" data-k="${k}"><span>${ic(k)}</span>${l}</button>`).join("");
+let h=T==="movie"&&!oc?"":'<div style="height:52px"></div>';
+const ar=`<button class="ab l" data-a="sc" data-d="-1">‹</button><button class="ab r" data-a="sc" data-d="1">›</button>`;
+const row=(g,l,more,t)=>`<div class="gt">${g}<span>${l.length} itens</span></div><div class="rw"><div class="row">${(more?l.slice(0,12):l).map(x=>card(x,t,g)).join("")}</div>${ar}</div>${more?`<div class="rf"><button data-a="more" data-g="${g}">Ver mais ›</button></div>`:""}`;
+if(T==="fav"&&mode!=="vip"){h+=`<div class="sec" style="text-align:center;padding:26px">👑<br><b>Favoritos são exclusivos para membros VIP</b><br><span class="mut">Entre como VIP para salvar e ver seus favoritos.</span><button class="btn g" data-a="vip">Entrar como membro VIP</button></div>`}else if(T==="fav"){h+=`<div class="sec" style="font-weight:800">⭐ CURTIDOS</div><div class="ct">${["live","movie","series"].map(k=>{const n=Object.values(DATA[k]).flat().filter(x=>favs.has(x)).length;return `<button class="${k===ft?"on":""}" data-a="ft" data-k="${k}">${LAB[k]} ${n}</button>`}).join("")}</div>`;
+for(const[g,l]of Object.entries(DATA[ft])){const f=l.filter(x=>favs.has(x));if(f.length)h+=favG(g,f,ft)}}
+else if(oc&&DATA[T][oc.g]){const ps=land?30:15,t=cq.trim().toLowerCase(),f=DATA[T][oc.g].filter(x=>x.toLowerCase().includes(t)),tp=Math.max(1,Math.ceil(f.length/ps)),pg=Math.min(oc.pg,tp),pn=[...new Set([1,...Array.from({length:tp},(_,i)=>i+1).filter(n=>Math.abs(n-pg)<=2),tp])].sort((a,b)=>a-b);
+h+=`<div class="ch"><button data-a="back">‹ Voltar</button><h2>${oc.g}</h2><i></i></div><div class="sec" style="margin:0 14px 12px;padding:8px"><input id="cq" value="${cq}" placeholder="Pesquisar nesta categoria…" style="margin:0"></div><div class="cg" style="grid-template-columns:repeat(${T==="live"?1:land?5:3},1fr)">${f.slice((pg-1)*ps,pg*ps).map(x=>T==="live"?`<div class="cr" data-a="play" data-n="${x}" data-t="live">📺 <span>${x}</span><b data-a="fav" data-n="${x}">${isF(x)?"⭐":"☆"}</b></div>`:card(x,T,oc.g)).join("")||'<p class="mut" style="padding:14px">Nenhum conteúdo encontrado nesta categoria.</p>'}</div>`;
+if(tp>1)h+=`<nav class="pgn"><button data-a="pg" data-p="${pg-1}" ${pg<=1?"disabled":""}>‹</button>${pn.map((n,i)=>(i&&n-pn[i-1]>1?"<span>…</span>":"")+`<button class="${n===pg?"on":""}" data-a="pg" data-p="${n}">${n}</button>`).join("")}<button data-a="pg" data-p="${pg+1}" ${pg>=tp?"disabled":""}>›</button></nav>`}
+else{const D=DATA[T],all=Object.values(D).flat();
+if(T==="movie"){const x=all.slice(0,7)[hero%7];h+=`<div class="hero" style="background:linear-gradient(0deg,#07040d 6%,transparent 60%),linear-gradient(135deg,hsl(${hue(x)} 60% 35%),#07040d)"><small>↗ POPULARES AGORA</small><h2>${x}</h2><div><span class="pill">★ 8.${hero%7+1}</span> 2026</div><div class="hb"><button data-a="play" data-n="${x}" data-t="movie">▶ ASSISTIR</button><button data-a="det" data-n="${x}" data-t="movie">ⓘ MAIS INFORMAÇÕES</button></div><div class="dots">${[0,1,2,3,4,5,6].map(i=>`<i class="${i===hero%7?"on":""}"></i>`).join("")}</div></div>`}
+h+=`<div class="sec"><b>${LAB[T]}</b><select id="fs"><option value="">TODAS AS CATEGORIAS</option>${Object.keys(D).map(g=>`<option ${g===flt?"selected":""}>${g}</option>`).join("")}</select><input id="qs" value="${q}" placeholder="Pesquisar nesta categoria…"></div>`;
+if(T==="movie"&&!flt&&!q)h+=`<div class="gt">↗ TOP 10 FILMES DA SEMANA<span>mais assistidos</span></div><div class="rw"><div class="row">${all.slice(0,10).map((n,i)=>`<div class="t1"><b>${i+1}</b><div>${card(n,"movie")}</div><small class="tt">${n}</small></div>`).join("")}</div>${ar}</div>`;
+Object.entries(D).forEach(([g,l],i)=>{const f=l.filter(x=>(!flt||g===flt)&&x.toLowerCase().includes(q.toLowerCase()));if(f.length){h+=row(g,f,true,T);if(mode==="free"&&i%2===1)h+=ad}})}
+s.innerHTML=h;const fs=$("#fs");if(fs){fs.onchange=()=>{flt=fs.value;draw()};$("#qs").oninput=e=>{q=e.target.value;const p=e.target.selectionStart;draw();const n=$("#qs");n.focus();n.setSelectionRange(p,p)}}
+const ci=$("#cq");if(ci)ci.oninput=e=>{cq=e.target.value;oc.pg=1;const p=e.target.selectionStart;draw();const n=$("#cq");n.focus();n.setSelectionRange(p,p)};
+clearInterval(hi);if(T==="movie"&&!flt&&!q&&!oc)hi=setInterval(()=>{hero++;if(tab==="movie"&&!pl&&!oc&&!$("#ov").classList.contains("on")&&!q){const y=$("#scr").scrollTop;draw();$("#scr").scrollTop=y}},5000)}
+document.addEventListener("click",e=>{const a=e.target.closest("[data-a]");if(a&&act[a.dataset.a])act[a.dataset.a](a)});
+log("—","demo iniciada",200,"toda a rede abaixo é simulada no navegador");document.querySelectorAll("[data-l]").forEach(i=>i.src=LOGO);$("#scr").onscroll=e=>{$("#fab").style.display=e.target.scrollTop>300&&$("#nv").classList.contains("on")?"block":"none"};welcome();
+</script>
+</body>
+</html>
